@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
-import { z } from 'zod'
 
 import PasswordInput from '../components/password-input'
 import { Button } from '../components/ui/button'
@@ -23,55 +22,7 @@ import {
   FormMessage,
 } from '../components/ui/form'
 import { Input } from '../components/ui/input'
-
-const signupSchema = z.object({
-  firstName: z
-    .string({
-      message: 'O primeiro nome é obrigatório.',
-    })
-    .trim()
-    .min(1, {
-      message: 'O primeiro nome é obrigatório.',
-    }),
-  lastName: z
-    .string({
-      message: 'O sobrenome é obrigatório.',
-    })
-    .trim()
-    .min(1, {
-      message: 'O sobrenome é obrigatório.',
-    }),
-  email: z
-    .string({
-      message: 'O email é obrigatório.',
-    })
-    .email({
-      message: 'O email é inválido.',
-    })
-    .trim()
-    .min(1, {
-      message: 'O email é obrigatório.',
-    }),
-  password: z
-    .string({
-      message: 'A senha é obrigatória.',
-    })
-    .trim()
-    .min(6, {
-      message: 'A senha deve ter no mínimo 6 caracteres.',
-    }),
-  confirmPassword: z
-    .string({
-      message: 'A confirmação de senha é obrigatória.',
-    })
-    .trim()
-    .min(6, {
-      message: 'A confirmação de senha é obrigatória.',
-    }),
-  terms: z.boolean().refine((value) => value === true, {
-    message: 'Aceitar o termo de uso é obrigatório.',
-  }),
-})
+import { signupSchema } from '../schemas/signup-schema'
 
 const SignupPage = () => {
   const methods = useForm({
@@ -91,10 +42,10 @@ const SignupPage = () => {
   }
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center gap-3">
+    <div className="flex h-screen w-screen flex-col items-center justify-center gap-3 overflow-x-hidden">
       <Form {...methods}>
         <form onSubmit={methods.handleSubmit(handleSubmit)}>
-          <Card className="w-full max-w-md">
+          <Card className="w-[400px] max-w-md">
             <CardHeader>
               <CardTitle>Crie sua conta</CardTitle>
               <CardDescription>Insira suas informações abaixo.</CardDescription>
@@ -209,7 +160,7 @@ const SignupPage = () => {
         </form>
       </Form>
       <div className="flex items-center justify-center">
-        <p className="text-center opacity-50">Já possui uma conta?</p>
+        <p className="text-center text-sm opacity-50">Já possui uma conta?</p>
         <Button variant="link" asChild>
           <Link to="/login">Faça Login</Link>
         </Button>
