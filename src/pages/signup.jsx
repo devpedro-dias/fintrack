@@ -1,11 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
-import { toast } from 'sonner'
-
-import api from '@/lib/axios'
 
 import PasswordInput from '../components/password-input'
 import { Button } from '../components/ui/button'
@@ -27,23 +23,11 @@ import {
   FormMessage,
 } from '../components/ui/form'
 import { Input } from '../components/ui/input'
+import { AuthContext } from '../contexts/auth'
 import { signupSchema } from '../schemas/signup-schema'
 
 const SignupPage = () => {
-  const [user, setUser] = useState(null)
-  const signupMutation = useMutation({
-    mutationKey: ['signup'],
-    mutationFn: async (data) => {
-      const response = await api.post('/users', {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        email: data.email,
-        password: data.password,
-      })
-
-      return response.data
-    },
-  })
+  const { user, signup } = useContext(AuthContext)
 
   const methods = useForm({
     resolver: zodResolver(signupSchema),
@@ -57,47 +41,7 @@ const SignupPage = () => {
     },
   })
 
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const accessToken = localStorage.getItem('accessToken')
-        const refreshToken = localStorage.getItem('refreshToken')
-
-        if (!accessToken && !refreshToken) return
-
-        const response = await api.get('/users/me', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-
-        setUser(response.data)
-      } catch (error) {
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        console.error(error)
-      }
-    }
-    init()
-  }, [])
-  const handleSubmit = (data) => {
-    signupMutation.mutate(data, {
-      onSuccess: (createdUser) => {
-        const accessToken = createdUser.tokens.accessToken
-        const refreshToken = createdUser.tokens.refreshToken
-
-        setUser(createdUser)
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('refreshToken', refreshToken)
-
-        methods.reset()
-        toast.success('Conta criada com sucesso!')
-      },
-      onError: () => {
-        toast.error('Error ao criar conta, tente novamente mais tarde.')
-      },
-    })
-  }
+  const handleSubmit = (data) => signup(data)
 
   if (user) {
     return (
