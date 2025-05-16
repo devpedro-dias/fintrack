@@ -102,7 +102,9 @@ const SignupPage = () => {
   if (user) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-3 overflow-x-hidden">
-        <h1 className="text-2xl font-bold">Conta criada com sucesso!</h1>
+        <h1 className="text-2xl font-bold">
+          Seja bem vindo, {user.first_name}
+        </h1>
         <Link to="/login">Ir para login</Link>
       </div>
     )

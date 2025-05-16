@@ -1,6 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
+import { toast } from 'sonner'
+
+import api from '@/lib/axios'
 
 import PasswordInput from '../components/password-input'
 import { Button } from '../components/ui/button'
@@ -24,6 +29,19 @@ import { Input } from '../components/ui/input'
 import { loginSchema } from '../schemas/login-schema'
 
 const LoginPage = () => {
+  const [user, setUser] = useState(null)
+  const loginMutation = useMutation({
+    mutationKey: ['login'],
+    mutationFn: async (data) => {
+      const response = await api.post('/auth/login', {
+        email: data.email,
+        password: data.password,
+      })
+
+      return response.data
+    },
+  })
+
   const methods = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -33,9 +51,48 @@ const LoginPage = () => {
   })
 
   const handleSubmit = (data) => {
-    console.log(data)
+    loginMutation.mutate(data, {
+      onSuccess: (loggedUser) => {
+        const accessToken = loggedUser.tokens.accessToken
+        const refreshToken = loggedUser.tokens.refreshToken
+
+        setUser(loggedUser)
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+
+        toast.success('Login efetuado com sucesso!')
+      },
+      onError: () => {
+        toast.error('Error ao logar na conta, tente novamente mais tarde.')
+      },
+    })
   }
 
+  useEffect(() => {
+    const init = async () => {
+      const accessToken = localStorage.getItem('accessToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (!accessToken && !refreshToken) return
+      try {
+        const response = await api.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+
+        setUser(response.data)
+      } catch (error) {
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        console.error(error)
+      }
+    }
+
+    init()
+  }, [])
+
+  if (user) return <div>Logado como: {user.first_name}</div>
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-3 overflow-x-hidden">
       <Form {...methods}>
