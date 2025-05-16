@@ -8,6 +8,7 @@ export const AuthContext = createContext({
   user: null,
   login: () => {},
   signup: () => {},
+  isInitializign: true,
 })
 
 export const useAuthContext = () => useContext(AuthContext)
@@ -27,6 +28,7 @@ const removeTokens = () => {
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState()
+  const [isInitializign, setIsInitializign] = useState(true)
 
   const signupMutation = useMutation({
     mutationKey: ['signup'],
@@ -85,6 +87,7 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const init = async () => {
       try {
+        setIsInitializign(true)
         const accessToken = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN_KEY)
         const refreshToken = localStorage.getItem(
           LOCAL_STORAGE_REFRESH_TOKEN_KEY
@@ -100,8 +103,11 @@ export const AuthContextProvider = ({ children }) => {
 
         setUser(response.data)
       } catch (error) {
+        setUser(null)
         removeTokens()
         console.error(error)
+      } finally {
+        setIsInitializign(false)
       }
     }
     init()
@@ -113,6 +119,7 @@ export const AuthContextProvider = ({ children }) => {
         user: user,
         login: login,
         signup: signup,
+        isInitializign: isInitializign,
       }}
     >
       {children}
