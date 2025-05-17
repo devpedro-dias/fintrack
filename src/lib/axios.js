@@ -2,11 +2,15 @@ import axios from 'axios'
 
 import { LOCAL_STORAGE_ACCESS_TOKEN_KEY } from '@/constants/local-storage'
 
-const api = axios.create({
+export const protectedApi = axios.create({
   baseURL: 'http://localhost:8080/api',
 })
 
-api.interceptors.request.use((request) => {
+export const publicAPi = axios.create({
+  baseURL: 'http://localhost:8080/api',
+})
+
+protectedApi.interceptors.request.use((request) => {
   const accessToken = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN_KEY)
 
   if (!accessToken) {
@@ -15,5 +19,3 @@ api.interceptors.request.use((request) => {
   request.headers.Authorization = `Bearer ${accessToken}`
   return request
 })
-
-export default api
