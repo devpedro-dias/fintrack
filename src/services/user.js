@@ -23,8 +23,8 @@ export const UserService = {
     return {
       id: response.data.id,
       email: response.data.email,
-      first_name: response.data.first_name,
-      last_name: response.data.last_name,
+      firstName: response.data.first_name,
+      lastName: response.data.last_name,
       tokens: response.data.tokens,
     }
   },
@@ -46,13 +46,14 @@ export const UserService = {
     return {
       id: response.data.id,
       email: response.data.email,
-      first_name: response.data.first_name,
-      last_name: response.data.last_name,
+      firstName: response.data.first_name,
+      lastName: response.data.last_name,
       tokens: response.data.tokens,
     }
   },
   /**
    * Returns the authenticated user
+
    * @returns {Object} Authenticated user
    */
   me: async () => {
@@ -60,8 +61,8 @@ export const UserService = {
     return {
       id: response.data.id,
       email: response.data.email,
-      first_name: response.data.first_name,
-      last_name: response.data.last_name,
+      firstName: response.data.first_name,
+      lastName: response.data.last_name,
     }
   },
 }
