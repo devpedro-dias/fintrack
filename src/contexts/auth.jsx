@@ -8,7 +8,7 @@ import {
 } from '@/constants/local-storage'
 import { UserService } from '@/services/user'
 
-import { protectedApi, publicAPi } from '../lib/axios'
+import { protectedApi } from '../lib/axios'
 
 export const AuthContext = createContext({
   user: null,
@@ -38,7 +38,6 @@ export const AuthContextProvider = ({ children }) => {
     mutationKey: ['signup'],
     mutationFn: async (data) => {
       const response = await UserService.signup(data)
-
       return response
     },
   })
@@ -46,12 +45,8 @@ export const AuthContextProvider = ({ children }) => {
   const loginMutation = useMutation({
     mutationKey: ['login'],
     mutationFn: async (data) => {
-      const response = await publicAPi.post('/auth/login', {
-        email: data.email,
-        password: data.password,
-      })
-
-      return response.data
+      const response = await UserService.login(data)
+      return response
     },
   })
 
