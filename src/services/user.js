@@ -12,8 +12,8 @@ export const UserService = {
     return {
       id: response.data.id,
       email: response.data.email,
-      firstName: response.data.first_name,
-      lastName: response.data.last_name,
+      first_name: response.data.first_name,
+      last_name: response.data.last_name,
       tokens: response.data.tokens,
     }
   },
@@ -27,8 +27,8 @@ export const UserService = {
     return {
       id: response.data.id,
       email: response.data.email,
-      firstName: response.data.first_name,
-      lastName: response.data.last_name,
+      first_name: response.data.first_name,
+      last_name: response.data.last_name,
       tokens: response.data.tokens,
     }
   },
@@ -37,8 +37,8 @@ export const UserService = {
     return {
       id: response.data.id,
       email: response.data.email,
-      firstName: response.data.first_name,
-      lastName: response.data.last_name,
+      first_name: response.data.first_name,
+      last_name: response.data.last_name,
     }
   },
 }

@@ -8,8 +8,6 @@ import {
 } from '@/constants/local-storage'
 import { UserService } from '@/services/user'
 
-import { protectedApi } from '../lib/axios'
-
 export const AuthContext = createContext({
   user: null,
   login: () => {},
@@ -94,9 +92,9 @@ export const AuthContextProvider = ({ children }) => {
 
         if (!accessToken && !refreshToken) return
 
-        const response = await protectedApi.get('/users/me')
+        const response = await UserService.me()
 
-        setUser(response.data)
+        setUser(response)
       } catch (error) {
         setUser(null)
         console.error(error)
