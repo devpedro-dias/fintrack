@@ -54,6 +54,8 @@ export const DatePickerWithRange = ({
             selected={value}
             onSelect={onChange}
             numberOfMonths={2}
+            locale={ptBR}
+            className={'capitalize'}
           />
         </PopoverContent>
       </Popover>
