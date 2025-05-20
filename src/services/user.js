@@ -65,4 +65,22 @@ export const UserService = {
       lastName: response.data.last_name,
     }
   },
+  /**
+   * Return Authenticated User balance
+   * @param {Object} input - User data
+   * @param {string} input.from - Initial date (YYYY-MM_DD)
+   * @param {string} input.to - Final date (YYYY-MM_DD)
+   *
+   * @returns {Object} User balance
+   */
+  getBalance: async (input) => {
+    const queryParams = new URLSearchParams()
+    queryParams.set('from', input.from)
+    queryParams.set('to', input.to)
+
+    const response = await protectedApi.get(
+      `/users/me/balance?${queryParams.toString()}`
+    )
+    return response.data
+  },
 }
