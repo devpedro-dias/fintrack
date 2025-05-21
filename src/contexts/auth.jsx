@@ -35,32 +35,30 @@ export const AuthContextProvider = ({ children }) => {
   const signupMutation = useSignUp()
   const loginMutation = useLogin()
 
-  const signup = (data) => {
-    signupMutation.mutate(data, {
-      onSuccess: (createdUser) => {
-        setUser(createdUser)
-        setTokens(createdUser.tokens)
+  const signup = async (data) => {
+    try {
+      const createdUser = await signupMutation.mutateAsync(data)
+      setUser(createdUser)
+      setTokens(createdUser.tokens)
 
-        toast.success('Conta criada com sucesso!')
-      },
-      onError: () => {
-        toast.error('Error ao criar conta, tente novamente mais tarde.')
-      },
-    })
+      toast.success('Conta criada com sucesso!')
+    } catch (error) {
+      console.error(error)
+      toast.error('Error ao criar conta, tente novamente mais tarde.')
+    }
   }
 
-  const login = (data) => {
-    loginMutation.mutate(data, {
-      onSuccess: (loggedUser) => {
-        setUser(loggedUser)
-        setTokens(loggedUser.tokens)
+  const login = async (data) => {
+    try {
+      const loggedUser = await loginMutation.mutateAsync(data)
+      setUser(loggedUser)
+      setTokens(loggedUser.tokens)
 
-        toast.success('Login efetuado com sucesso!')
-      },
-      onError: () => {
-        toast.error('Error ao logar na conta, tente novamente mais tarde.')
-      },
-    })
+      toast.success('Login efetuado com sucesso!')
+    } catch (error) {
+      console.error(error)
+      toast.error('Error ao logar na conta, tente novamente mais tarde.')
+    }
   }
 
   const signOut = () => {
