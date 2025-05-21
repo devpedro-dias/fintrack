@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Loader2Icon,
   PiggyBank,
@@ -11,8 +10,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { getUserBalanceQueryKey } from '@/api/hooks/user'
-import { TransactionService } from '@/api/services/transaction'
+import { useCreateTransaction } from '@/api/hooks/transaction'
 import {
   Dialog,
   DialogClose,
@@ -23,7 +21,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useAuthContext } from '@/contexts/auth'
 import { addTransactionFormSchema } from '@/schemas/add-transaction-form-schema'
 
 import { Button } from './ui/button'
@@ -40,18 +37,7 @@ import { Input } from './ui/input'
 import NumericInput from './ui/numeric-input'
 
 const AddTransactionButton = () => {
-  const queryClient = useQueryClient()
-  const { user } = useAuthContext()
-  const { mutateAsync: createTransaction } = useMutation({
-    mutationKey: ['create-transaction'],
-    mutationFn: (input) => TransactionService.create(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getUserBalanceQueryKey({ userId: user.id }),
-        exact: false,
-      })
-    },
-  })
+  const { mutateAsync: createTransaction } = useCreateTransaction()
   const [dialogIsOpen, setDialogIsOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(addTransactionFormSchema),
