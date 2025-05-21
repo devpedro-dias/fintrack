@@ -6,11 +6,11 @@ import {
 } from '@/constants/local-storage'
 
 export const protectedApi = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
 })
 
 export const publicAPi = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
 })
 
 protectedApi.interceptors.request.use((request) => {
