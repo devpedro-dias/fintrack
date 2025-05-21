@@ -1,6 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Loader2Icon } from 'lucide-react'
 import { Link, Navigate } from 'react-router'
+
+import { useSignupForm } from '@/forms/hooks/user'
 
 import PasswordInput from '../components/password-input'
 import { Button } from '../components/ui/button'
@@ -23,22 +24,11 @@ import {
 } from '../components/ui/form'
 import { Input } from '../components/ui/input'
 import { useAuthContext } from '../contexts/auth'
-import { signupSchema } from '../forms/schemas/signup-schema'
 
 const SignupPage = () => {
   const { user, signup, isInitializign } = useAuthContext()
 
-  const methods = useForm({
-    resolver: zodResolver(signupSchema),
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      terms: false,
-    },
-  })
+  const { form } = useSignupForm()
 
   const handleSubmit = (data) => signup(data)
 
@@ -48,8 +38,8 @@ const SignupPage = () => {
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-3 overflow-x-hidden">
-      <Form {...methods}>
-        <form onSubmit={methods.handleSubmit(handleSubmit)}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
           <Card className="w-[400px] max-w-md">
             <CardHeader>
               <CardTitle>Crie sua conta</CardTitle>
@@ -57,7 +47,7 @@ const SignupPage = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
@@ -70,7 +60,7 @@ const SignupPage = () => {
                 )}
               />
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
@@ -83,7 +73,7 @@ const SignupPage = () => {
                 )}
               />
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -96,7 +86,7 @@ const SignupPage = () => {
                 )}
               />
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
@@ -110,7 +100,7 @@ const SignupPage = () => {
               />
 
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
@@ -126,7 +116,7 @@ const SignupPage = () => {
                 )}
               />
               <FormField
-                control={methods.control}
+                control={form.control}
                 name="terms"
                 render={({ field }) => (
                   <FormItem className="flex items-center gap-2">
@@ -138,12 +128,12 @@ const SignupPage = () => {
                     </FormControl>
                     <div className="leading-none">
                       <FormLabel
-                        className={`text-xs font-medium text-muted-foreground opacity-75 ${methods.formState.errors.terms ? 'text-destructive' : ''}`}
+                        className={`text-xs font-medium text-muted-foreground opacity-75 ${form.formState.errors.terms ? 'text-destructive' : ''}`}
                       >
                         Ao clicar em &ldquo;Criar Conta&ldquo;{' '}
                         <Link
                           className={`"text-white underline ${
-                            methods.formState.errors.terms
+                            form.formState.errors.terms
                               ? 'text-destructive'
                               : ''
                           }`}
@@ -159,7 +149,12 @@ const SignupPage = () => {
               />
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Criar conta</Button>
+              <Button className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting && (
+                  <Loader2Icon className="mr-1 animate-spin" />
+                )}
+                Criar conta
+              </Button>
             </CardFooter>
           </Card>
         </form>
