@@ -23,7 +23,7 @@ import {
 } from '../components/ui/form'
 import { Input } from '../components/ui/input'
 import { useAuthContext } from '../contexts/auth'
-import { signupSchema } from '../schemas/signup-schema'
+import { signupSchema } from '../forms/schemas/signup-schema'
 
 const SignupPage = () => {
   const { user, signup, isInitializign } = useAuthContext()

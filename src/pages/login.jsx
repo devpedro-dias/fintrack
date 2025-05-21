@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '../components/ui/form'
 import { Input } from '../components/ui/input'
-import { loginSchema } from '../schemas/login-schema'
+import { loginSchema } from '../forms/schemas/login-schema'
 
 const LoginPage = () => {
   const { user, login, isInitializign } = useAuthContext()

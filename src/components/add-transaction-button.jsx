@@ -1,4 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Loader2Icon,
   PiggyBank,
@@ -7,10 +6,8 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { useCreateTransaction } from '@/api/hooks/transaction'
 import {
   Dialog,
   DialogClose,
@@ -21,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { addTransactionFormSchema } from '@/schemas/add-transaction-form-schema'
+import { useCreateTransactionForm } from '@/forms/hooks/transaction'
 
 import { Button } from './ui/button'
 import DatePicker from './ui/date-picker'
@@ -37,28 +34,19 @@ import { Input } from './ui/input'
 import NumericInput from './ui/numeric-input'
 
 const AddTransactionButton = () => {
-  const { mutateAsync: createTransaction } = useCreateTransaction()
   const [dialogIsOpen, setDialogIsOpen] = useState(false)
-  const form = useForm({
-    resolver: zodResolver(addTransactionFormSchema),
-    defaultValues: {
-      name: '',
-      amount: 0,
-      date: new Date(),
-      type: 'EARNING',
-    },
-    shouldUnregister: true,
-  })
-
-  const onSubmit = async (data) => {
-    try {
-      await createTransaction(data)
+  const { form, onSubmit } = useCreateTransactionForm({
+    onSuccess: () => {
       toast.success('Transação criada com sucesso!')
       setDialogIsOpen(false)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+    },
+    onError: () => {
+      toast.error(
+        'Ocorreu um erro ao adicionar transação. Por favor tente novamente'
+      )
+    },
+  })
+
   return (
     <>
       <Dialog modal={false} open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
