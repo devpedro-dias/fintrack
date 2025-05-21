@@ -1,7 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { PiggyBank, PlusIcon, TrendingDown, TrendingUp } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  Loader2Icon,
+  PiggyBank,
+  PlusIcon,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { NumericFormat } from 'react-number-format'
+import { toast } from 'sonner'
 
 import {
   Dialog,
@@ -13,7 +21,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { useAuthContext } from '@/contexts/auth'
 import { addTransactionFormSchema } from '@/schemas/add-transaction-form-schema'
+import { TransactionService } from '@/services/transaction'
 
 import { Button } from './ui/button'
 import DatePicker from './ui/date-picker'
@@ -26,8 +36,21 @@ import {
   FormMessage,
 } from './ui/form'
 import { Input } from './ui/input'
+import NumericInput from './ui/numeric-input'
 
 const AddTransactionButton = () => {
+  const queryClient = useQueryClient()
+  const { user } = useAuthContext()
+  const { mutateAsync: createTransaction } = useMutation({
+    mutationKey: ['create-transaction'],
+    mutationFn: (input) => TransactionService.create(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['balance', user.id],
+      })
+    },
+  })
+  const [dialogIsOpen, setDialogIsOpen] = useState(false)
   const form = useForm({
     resolver: zodResolver(addTransactionFormSchema),
     defaultValues: {
@@ -39,12 +62,18 @@ const AddTransactionButton = () => {
     shouldUnregister: true,
   })
 
-  const onSubmit = (data) => {
-    console.log(data)
+  const onSubmit = async (data) => {
+    try {
+      await createTransaction(data)
+      toast.success('Transação criada com sucesso!')
+      setDialogIsOpen(false)
+    } catch (error) {
+      console.error(error)
+    }
   }
   return (
     <>
-      <Dialog modal={false}>
+      <Dialog modal={false} open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
         <DialogTrigger asChild>
           <Button>
             <PlusIcon />
@@ -81,7 +110,7 @@ const AddTransactionButton = () => {
                   <FormItem>
                     <FormLabel>Valor</FormLabel>
                     <FormControl>
-                      <NumericFormat
+                      <NumericInput
                         placeholder="Digite o valor da transação"
                         thousandSeparator="."
                         decimalSeparator=","
@@ -160,11 +189,23 @@ const AddTransactionButton = () => {
               />
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="reset" variant="secondary" className="w-full">
+                  <Button
+                    type="reset"
+                    variant="secondary"
+                    className="w-full"
+                    disabled={form.formState.isSubmitting}
+                  >
                     Cancelar
                   </Button>
                 </DialogClose>
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting && (
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Adicionar
                 </Button>
               </DialogFooter>
