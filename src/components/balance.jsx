@@ -1,9 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
 import { PiggyBank, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
 import { useSearchParams } from 'react-router'
 
-import { useAuthContext } from '@/contexts/auth'
-import { UserService } from '@/services/user'
+import { useGetUserBalance } from '@/api/hooks/user'
 
 import BalanceItem from './balance-item'
 
@@ -12,15 +10,7 @@ const Balance = () => {
 
   const from = searchParams.get('from')
   const to = searchParams.get('to')
-  const { user } = useAuthContext()
-  const { data } = useQuery({
-    queryKey: ['balance', user.id, from, to],
-    queryFn: () => {
-      return UserService.getBalance({ from, to })
-    },
-    enabled: Boolean(from) && Boolean(to) && Boolean(user.id),
-    staleTime: 1000 * 60 * 5,
-  })
+  const { data } = useGetUserBalance({ from, to })
 
   return (
     <div className="grid grid-cols-2 grid-rows-2 gap-6">

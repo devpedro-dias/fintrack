@@ -11,6 +11,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+import { getUserBalanceQueryKey } from '@/api/hooks/user'
+import { TransactionService } from '@/api/services/transaction'
 import {
   Dialog,
   DialogClose,
@@ -23,7 +25,6 @@ import {
 } from '@/components/ui/dialog'
 import { useAuthContext } from '@/contexts/auth'
 import { addTransactionFormSchema } from '@/schemas/add-transaction-form-schema'
-import { TransactionService } from '@/services/transaction'
 
 import { Button } from './ui/button'
 import DatePicker from './ui/date-picker'
@@ -46,7 +47,8 @@ const AddTransactionButton = () => {
     mutationFn: (input) => TransactionService.create(input),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['balance', user.id],
+        queryKey: getUserBalanceQueryKey({ userId: user.id }),
+        exact: false,
       })
     },
   })
